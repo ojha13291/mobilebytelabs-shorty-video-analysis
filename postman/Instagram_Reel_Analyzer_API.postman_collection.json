@@ -1,0 +1,157 @@
+{
+  "info": {
+    "name": "Instagram Reel Analyzer API",
+    "description": "API for scraping and analyzing Instagram Reels with AI-powered insights",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345678"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Check if the API is running and healthy"
+      },
+      "response": []
+    },
+    {
+      "name": "Analyze Reels - Profile",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"target\": \"@smittyspeaks_\",\n  \"max_reels\": 3,\n  \"use_login\": true,\n  \"scraping_method\": \"selenium\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "analyze"]
+        },
+        "description": "Analyze reels from a specific Instagram profile"
+      },
+      "response": []
+    },
+    {
+      "name": "Analyze Reels - URL",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"target\": \"https://www.instagram.com/smittyspeaks_/?hl=en\",\n  \"max_reels\": 3,\n  \"use_login\": true,\n  \"scraping_method\": \"selenium\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "analyze"]
+        },
+        "description": "Analyze reels using a direct Instagram URL"
+      },
+      "response": []
+    },
+    {
+      "name": "Analyze Reels - Hashtag",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"target\": \"#motivation\",\n  \"max_reels\": 5,\n  \"use_login\": false,\n  \"scraping_method\": \"instaloader\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "analyze"]
+        },
+        "description": "Analyze reels from a hashtag"
+      },
+      "response": []
+    },
+    {
+      "name": "Analyze Reels - Without Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"target\": \"@example_user\",\n  \"max_reels\": 2,\n  \"use_login\": false,\n  \"scraping_method\": \"instaloader\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "analyze"]
+        },
+        "description": "Analyze reels without Instagram login"
+      },
+      "response": []
+    },
+    {
+      "name": "Analyze Reels - Instaloader Method",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"target\": \"@smittyspeaks_\",\n  \"max_reels\": 3,\n  \"use_login\": true,\n  \"scraping_method\": \"instaloader\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "analyze"]
+        },
+        "description": "Analyze reels using the Instaloader method"
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Add any pre-request logic here"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5001",
+      "type": "string"
+    }
+  ]
+}
