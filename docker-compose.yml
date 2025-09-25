@@ -7,9 +7,9 @@ services:
     ports:
       - "5001:5001"
     environment:
-      - SERVICE_HOST=0.0.0.0
-      - SERVICE_PORT=5001
-      - DEBUG=false
+      - FLASK_HOST=0.0.0.0
+      - FLASK_PORT=5001
+      - FLASK_DEBUG=false
       - MISTRAL_API_KEY=${MISTRAL_API_KEY}
       - INSTAGRAM_USERNAME=${INSTAGRAM_USERNAME}
       - INSTAGRAM_PASSWORD=${INSTAGRAM_PASSWORD}

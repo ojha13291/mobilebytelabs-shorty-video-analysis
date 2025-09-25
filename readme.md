@@ -2,38 +2,6 @@
 
 A modular, open-source microservice for scraping and analyzing Instagram reels with AI-powered insights. Built with Python Flask, this microservice provides a REST API for extracting reel data and generating intelligent content analysis.
 
-## 🚀 Features
-
-- **Modular Architecture**: Clean separation of concerns with dedicated services for scraping and AI analysis
-- **Multiple Scraping Methods**: Support for both Instaloader and Selenium WebDriver
-- **AI-Powered Analysis**: Integration with Mistral AI for content summarization, categorization, and sentiment analysis
-- **Embeddings Support**: Generate vector embeddings for content similarity analysis
-- **Production Ready**: Docker support, health checks, metrics, and comprehensive error handling
-- **Open Source Friendly**: MIT licensed with comprehensive documentation
-
-## 📋 API Endpoints
-
-### Health Check
-```
-GET /health
-```
-Returns service health status and component availability.
-
-### Analyze Reels
-```
-POST /api/analyze
-```
-Main endpoint for scraping and analyzing Instagram reels.
-
-**Request Body:**
-```json
-{
-  "target": "@username",           // Instagram URL, profile, or hashtag
-  "max_reels": 10,                // Maximum reels to analyze (default: 10)
-  "use_login": true,              // Use Instagram login (default: true)
-  "scraping_method": "instaloader", // "instaloader" or "selenium"
-  "include_comments": true,       // Include comment analysis
-  "include_analysis": true        // Include AI analysis
 }
 ```
 
