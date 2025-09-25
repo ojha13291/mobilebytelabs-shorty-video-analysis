@@ -9,10 +9,11 @@ import unittest
 import sys
 import os
 
-# Add the parent directory to the path to import the platform_resolver module
+# Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from platform_resolver import PlatformResolver, detect_platform, get_platform_info
+# Import from the resolver package
+from resolver.platform_resolver import PlatformResolver, detect_platform, get_platform_info
 
 
 class TestPlatformResolver(unittest.TestCase):
