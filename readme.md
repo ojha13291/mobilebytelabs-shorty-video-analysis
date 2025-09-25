@@ -743,7 +743,23 @@ All errors follow a consistent format for easy handling:
 
 We welcome contributions to Shorty Video Analysis! Whether you're fixing bugs, adding features, or improving documentation, your help is appreciated.
 
+<<<<<<< Updated upstream
 ### 🚀 Quick Contributing Guide
+=======
+### GitHub Templates
+
+We provide several GitHub templates to help streamline contributions:
+
+- **🐛 [Bug Report](https://github.com/yourusername/instagram-reels-microservice/issues/new?template=bug_report.md)** - Report bugs and issues
+- **✨ [Feature Request](https://github.com/yourusername/instagram-reels-microservice/issues/new?template=feature_request.md)** - Suggest new features
+- **🌐 [Platform Support Request](https://github.com/yourusername/instagram-reels-microservice/issues/new?template=platform_support_request.md)** - Request support for new social media platforms
+- **🔧 [API Issue](https://github.com/yourusername/instagram-reels-microservice/issues/new?template=api_issue.md)** - Report API-specific issues
+- **📚 [Documentation Issue](https://github.com/yourusername/instagram-reels-microservice/issues/new?template=documentation_issue.md)** - Report documentation problems
+
+When submitting pull requests, please use our [Pull Request Template](https://github.com/yourusername/instagram-reels-microservice/blob/main/.github/pull_request_template.md) to ensure all necessary information is included.
+
+### Development Setup
+>>>>>>> Stashed changes
 
 #### 1. Fork and Clone
 ```bash
