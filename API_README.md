@@ -8,6 +8,7 @@ This REST API provides endpoints to analyze Instagram Reels using AI. It's desig
 
 - Python 3.8+
 - Required Python packages (install using `pip install -r requirements.txt`)
+- Mistral AI API key (get from [Mistral AI](https://mistral.ai/))
 
 ### Running the API Server
 
@@ -31,9 +32,15 @@ Returns the status of the API server.
 
 ```json
 {
-  "status": "ok",
+  "status": "healthy",
   "version": "1.0.0",
-  "timestamp": "2023-11-15T12:34:56.789012"
+  "timestamp": "2024-01-15T12:34:56.789012",
+  "services": {
+    "api": "healthy",
+    "scraper": "healthy",
+    "analyzer": "healthy"
+  },
+  "uptime": 3600.5
 }
 ```
 
@@ -45,14 +52,57 @@ POST /api/analyze
 
 Analyzes Instagram reels from a profile, hashtag, or direct URL.
 
+### Service Metrics
+
+```
+GET /api/metrics
+```
+
+Returns service performance metrics and usage statistics.
+
+**Response:**
+
+```json
+{
+  "total_requests": 150,
+  "successful_requests": 145,
+  "failed_requests": 5,
+  "average_processing_time": 8.5,
+  "last_request_time": "2024-01-15T12:34:56",
+  "uptime_seconds": 7200,
+  "success_rate": 96.67
+}
+```
+
+### Configuration
+
+```
+GET /api/config
+```
+
+Returns current service configuration (sanitized).
+
+**Response:**
+
+```json
+{
+  "service_host": "0.0.0.0",
+  "service_port": 5001,
+  "max_reels_default": 10,
+  "debug": false,
+  "scraping_method": "instaloader"
+}
+```
+
 **Request Body:**
 
 ```json
 {
-  "target": "@username",  // Instagram URL, profile name, or hashtag
-  "max_reels": 10,       // Maximum number of reels to analyze (default: 10)
-  "use_login": true,     // Whether to use Instagram login (default: true)
-  "scraping_method": "instaloader"  // "instaloader" or "selenium" (default: "instaloader")
+  "target": "@username",                    // Instagram URL, profile name, or hashtag
+  "max_reels": 10,                         // Maximum number of reels to analyze (default: 10)
+  "use_login": true,                       // Whether to use Instagram login (default: true)
+  "scraping_method": "instaloader",        // "instaloader" or "selenium" (default: "instaloader")
+  "include_analysis": true                 // Include AI analysis (default: true)
 }
 ```
 
@@ -65,28 +115,42 @@ Analyzes Instagram reels from a profile, hashtag, or direct URL.
   "results": [
     {
       "reel_id": "CxYZ123ABC",
-      "Reel_link": "https://instagram.fxyz.com/v/t50.12345-16/123456_789012345678901_1234567890123456789_n.mp4",
-      "caption": "This is a sample reel caption #trending",
+      "reel_url": "https://www.instagram.com/reel/CxYZ123ABC/",
+      "video_url": "https://instagram.fxyz.com/v/t50.12345-16/123456_789.mp4",
+      "caption": "Amazing sunset timelapse 🌅 #sunset #photography",
       "creator": {
-        "username": "username",
-        "profile": "https://www.instagram.com/username/"
+        "username": "photographer_jane",
+        "profile_url": "https://www.instagram.com/photographer_jane/",
+        "full_name": "Jane Doe",
+        "followers_count": 15420,
+        "following_count": 342
       },
-      "ai_summary": "A funny video showing a cat playing with a toy.",
-      "category": ["Comedy", "Animals"],
       "likes": 1234,
       "views": 5678,
-      "sentiment": "Positive",
-      "top_comment_summary": "Users find the video hilarious and are sharing similar experiences.",
-      "embeddings": [0.123, 0.456, 0.789],
+      "comments_count": 45,
+      "posted_at": "2024-01-15T15:30:45.123456",
+      "hashtags": ["#sunset", "#photography"],
+      "mentions": [],
       "top_comments": [
         {
-          "user": "commenter1",
-          "comment": "This is so funny! 😂",
-          "timestamp": "2023-11-10T15:30:45.123456"
+          "user": "user123",
+          "comment": "Beautiful shot! 😍",
+          "timestamp": "2024-01-15T16:00:00",
+          "likes": 12
         }
-      ]
+      ],
+      "analysis": {
+        "summary": "A stunning timelapse video of a sunset with vibrant colors and smooth transitions.",
+        "category": ["Photography", "Nature", "Art"],
+        "sentiment": "Positive",
+        "top_comment_summary": "Viewers are impressed by the beauty and quality of the sunset footage.",
+        "keywords": ["sunset", "timelapse", "photography", "nature", "colors"]
+      },
+      "embeddings": [0.123, 0.456, 0.789]
     }
-  ]
+  ],
+  "processing_time": 8.5,
+  "errors": []
 }
 ```
 
@@ -134,22 +198,32 @@ try {
 The API returns appropriate HTTP status codes:
 
 - 200: Success
-- 400: Bad request (missing parameters)
+- 400: Bad request (missing parameters, validation errors)
 - 500: Server error
 
-Error responses include an error message:
+Error responses include detailed error messages:
 
 ```json
 {
-  "error": "Error message details"
+  "error": "Configuration validation failed: MISTRAL_API_KEY is required"
 }
 ```
 
+Common error scenarios:
+- Missing API keys
+- Invalid Instagram credentials
+- Rate limiting from Instagram
+- Network connectivity issues
+- Invalid request parameters
+
 ## Security Considerations
 
-- The API currently doesn't implement authentication. For production use, add proper authentication.
-- Instagram credentials are stored directly in the code. For production, use environment variables or a secure configuration system.
-- CORS is enabled for all origins, which may need to be restricted in production.
+- **API Keys**: Store Mistral API keys securely using environment variables or secret management systems
+- **Instagram Credentials**: Use dedicated Instagram accounts for scraping, not personal accounts
+- **Rate Limiting**: Implement rate limiting in production deployments
+- **CORS**: Configure CORS appropriately for your deployment environment
+- **Input Validation**: All inputs are validated and sanitized
+- **Error Handling**: Sensitive information is not exposed in error messages
 
 ## License
 
