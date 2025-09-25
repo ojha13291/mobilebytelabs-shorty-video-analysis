@@ -20,6 +20,9 @@ import instaloader
 from instaloader import Profile, Hashtag, Post
 import requests
 
+# Import platform resolver
+from platform_resolver import PlatformResolver, detect_platform, get_platform_info
+
 # Initialize Flask app
 app = Flask(__name__)
 # Enable CORS for all routes
@@ -49,6 +52,9 @@ except Exception as e:
     print(f"Error initializing SentenceTransformer: {str(e)}")
     # Fallback to simple embedding if model fails to load
     embedder = None
+
+# Initialize platform resolver
+platform_resolver = PlatformResolver()
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -1089,6 +1095,37 @@ def analyze_reels():
     use_login = data.get('use_login', True)
     scraping_method = data.get('scraping_method', 'instaloader')  # 'selenium' or 'instaloader'
     
+    # Detect platform from target URL
+    detected_platform = platform_resolver.detect_platform(target)
+    
+    # If platform is unknown, try to detect from target format
+    if detected_platform == 'unknown':
+        # Check if it's a username (no URL indicators)
+        if not target.startswith(('http://', 'https://', 'www.')) and '/' not in target:
+            # Assume Instagram username for backward compatibility
+            detected_platform = 'instagram'
+            print(f"Assuming Instagram platform for target: {target}")
+        else:
+            print(f"Could not detect platform for target: {target}")
+            return jsonify({
+                'error': f'Could not detect social media platform from target: {target}. Please provide a valid URL.',
+                'detected_platform': 'unknown',
+                'supported_platforms': ['youtube', 'instagram', 'tiktok', 'twitter', 'facebook']
+            }), 400
+    
+    # Validate platform support for current scraping methods
+    supported_platforms = ['instagram']  # Currently only Instagram is fully supported
+    
+    if detected_platform not in supported_platforms:
+        return jsonify({
+            'error': f'Platform "{detected_platform}" is not currently supported for content analysis.',
+            'detected_platform': detected_platform,
+            'supported_platforms': supported_platforms,
+            'message': 'Platform detection successful, but content analysis is only available for Instagram currently.'
+        }), 400
+    
+    print(f"Detected platform: {detected_platform} for target: {target}")
+    
     results = []
     
     try:
@@ -1152,6 +1189,8 @@ def analyze_reels():
         
         return jsonify({
             'status': 'success',
+            'detected_platform': detected_platform,
+            'target': target,
             'count': len(results),
             'method_used': scraping_method,
             'results': results
@@ -1169,6 +1208,192 @@ def health_check():
         'version': '1.0.0',
         'timestamp': datetime.now().isoformat()
     })
+
+
+@app.route('/api/detect-platform', methods=['POST'])
+def detect_platform_endpoint():
+    """
+    Detect the social media platform from a given URL.
+    
+    Request body:
+        {
+            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        }
+    
+    Response:
+        {
+            "platform": "youtube",
+            "confidence": "high",
+            "url_type": "video",
+            "description": "Video sharing platform"
+        }
+    """
+    data = request.json
+    if not data or 'url' not in data:
+        return jsonify({'error': 'Missing url parameter'}), 400
+    
+    url = data.get('url')
+    if not url or not isinstance(url, str):
+        return jsonify({'error': 'Invalid url parameter'}), 400
+    
+    try:
+        # Get detailed platform information
+        platform_info = platform_resolver.get_platform_info(url)
+        
+        return jsonify({
+            'status': 'success',
+            'url': url,
+            'platform': platform_info['platform'],
+            'confidence': platform_info['confidence'],
+            'url_type': platform_info['url_type'],
+            'description': platform_info['description']
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to detect platform: {str(e)}'}), 500
+
+
+@app.route('/api/detect-platform/batch', methods=['POST'])
+def detect_platform_batch_endpoint():
+    """
+    Detect platforms for multiple URLs in a single request.
+    
+    Request body:
+        {
+            "urls": [
+                "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                "https://www.instagram.com/reel/ABC123DEF/",
+                "https://www.tiktok.com/@username/video/1234567890"
+            ]
+        }
+    
+    Response:
+        {
+            "status": "success",
+            "count": 3,
+            "results": [
+                {
+                    "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                    "platform": "youtube",
+                    "confidence": "high",
+                    "url_type": "video",
+                    "description": "Video sharing platform"
+                },
+                ...
+            ]
+        }
+    """
+    data = request.json
+    if not data or 'urls' not in data:
+        return jsonify({'error': 'Missing urls parameter'}), 400
+    
+    urls = data.get('urls')
+    if not isinstance(urls, list) or len(urls) == 0:
+        return jsonify({'error': 'urls must be a non-empty list'}), 400
+    
+    # Limit batch size to prevent abuse
+    if len(urls) > 100:
+        return jsonify({'error': 'Maximum 100 URLs allowed per batch request'}), 400
+    
+    results = []
+    errors = []
+    
+    for i, url in enumerate(urls):
+        try:
+            if not url or not isinstance(url, str):
+                errors.append({
+                    'index': i,
+                    'url': url,
+                    'error': 'Invalid URL format'
+                })
+                continue
+            
+            platform_info = platform_resolver.get_platform_info(url)
+            results.append({
+                'url': url,
+                'platform': platform_info['platform'],
+                'confidence': platform_info['confidence'],
+                'url_type': platform_info['url_type'],
+                'description': platform_info['description']
+            })
+            
+        except Exception as e:
+            errors.append({
+                'index': i,
+                'url': url,
+                'error': str(e)
+            })
+    
+    response = {
+        'status': 'success',
+        'count': len(results),
+        'results': results
+    }
+    
+    if errors:
+        response['errors'] = errors
+        response['error_count'] = len(errors)
+    
+    return jsonify(response)
+
+
+@app.route('/api/platforms', methods=['GET'])
+def get_supported_platforms():
+    """
+    Get a list of all supported social media platforms.
+    
+    Response:
+        {
+            "status": "success",
+            "platforms": [
+                {
+                    "name": "youtube",
+                    "description": "Video sharing platform"
+                },
+                {
+                    "name": "instagram",
+                    "description": "Photo and video sharing platform"
+                },
+                ...
+            ],
+            "count": 15
+        }
+    """
+    try:
+        platforms = platform_resolver.list_platforms()
+        platform_descriptions = {
+            'youtube': 'Video sharing platform',
+            'instagram': 'Photo and video sharing platform',
+            'tiktok': 'Short-form video platform',
+            'twitter': 'Microblogging and social networking',
+            'facebook': 'Social networking platform',
+            'linkedin': 'Professional networking platform',
+            'snapchat': 'Multimedia messaging app',
+            'pinterest': 'Visual discovery and bookmarking',
+            'reddit': 'Social news and discussion platform',
+            'twitch': 'Live streaming platform',
+            'discord': 'Voice, video, and text communication',
+            'telegram': 'Cloud-based instant messaging',
+            'whatsapp': 'Instant messaging and voice over IP',
+            'vimeo': 'Video hosting and sharing platform',
+            'dailymotion': 'Video sharing platform',
+        }
+        
+        platform_list = []
+        for platform in platforms:
+            platform_list.append({
+                'name': platform,
+                'description': platform_descriptions.get(platform, 'Social media platform')
+            })
+        
+        return jsonify({
+            'status': 'success',
+            'platforms': platform_list,
+            'count': len(platform_list)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to get platforms: {str(e)}'}), 500
 
 
 if __name__ == '__main__':

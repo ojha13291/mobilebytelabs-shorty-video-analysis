@@ -128,6 +128,50 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+<<<<<<< Updated upstream
+=======
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm / IntelliJ IDEA
+#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+#  be added to the global gitignore or merged into this project gitignore.  For a PyChain
+#  project, it is not recommended to check them into version control unless you also
+#  check the build system that generates them.
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Other IDEs
+*.sublime-project
+*.sublime-workspace
+.project
+.pydevproject
+.settings/
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+
+>>>>>>> Stashed changes
 # macOS
 .DS_Store
 .AppleDouble
