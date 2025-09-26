@@ -8,17 +8,10 @@ import requests
 import json
 import time
 import sys
-from pathlib import Path
 from typing import Dict, Any
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from utils.config import get_config
-
 # API Configuration
-config = get_config()
-API_BASE_URL = f"http://{config.api.host}:{config.api.port}"
+API_BASE_URL = "http://localhost:5001"
 TIMEOUT = 30
 
 def test_health_endpoint():

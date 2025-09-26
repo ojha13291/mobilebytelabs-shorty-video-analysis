@@ -11,7 +11,7 @@ from typing import Dict, List, Any
 from api.dependencies import get_embedder, get_mistral_config, get_instagram_credentials
 from api.schemas import HealthResponse, PlatformInfo
 from resolver.platform_resolver import PlatformResolver, detect_platform, get_platform_info
-from analyzer.video_analyzer import VideoAnalyzer
+from analyzer.video_analyzer import analyze_reels
 from scrapers.instagram_scraper import InstagramScraper
 
 api_bp = Blueprint('api', __name__)
