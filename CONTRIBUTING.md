@@ -1,524 +1,331 @@
-# Contributing to Instagram Reels Microservice
+# Contributing to Multi-Platform Video Data Fetcher
 
-Thank you for your interest in contributing to the Instagram Reels Microservice! We welcome contributions from the community and are pleased to have you join us.
+Thank you for your interest in contributing to this project! This document provides guidelines and information for contributors.
+
+## 🎯 Project Overview
+
+This is a multi-platform video data fetcher that extracts metadata from YouTube, Instagram, TikTok, and Twitter. The project consists of:
+
+- **Core API**: Flask-based REST API (`api.py`)
+- **Video Data Fetcher**: Modular fetcher system (`video_data_fetcher/`)
+- **Platform Resolvers**: Platform detection and URL handling (`resolver/`)
+- **Scrapers**: Platform-specific scraping logic (`scrapers/`)
+- **Comprehensive Testing**: Unit tests with proper mocking (`tests/`)
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Python 3.8 or higher
+- pip package manager
 - Git
-- Docker (optional, for containerized development)
 
-### Development Environment Setup
-
-1. **Fork the repository** on GitHub
-2. **Clone your fork locally:**
+### Development Setup
 ```bash
-git clone https://github.com/yourusername/instagram-reels-microservice.git
-cd instagram-reels-microservice
-```
+# Clone the repository
+git clone https://github.com/yourusername/multi-platform-video-fetcher.git
+cd multi-platform-video-fetcher
 
-3. **Create a virtual environment:**
-```bash
+# Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
 
-4. **Install development dependencies:**
-```bash
+# Install dependencies
 pip install -r requirements.txt
-pip install -e .[dev]
-```
 
-5. **Set up your environment file:**
-```bash
+# Install development dependencies
+pip install pytest pytest-cov black flake8 mypy
+
+# Copy environment configuration
 cp .env.example .env
-# Edit .env with your configuration
+
+# Run tests to verify setup
+python -m pytest tests/ -v
 ```
 
-6. **Run the service locally:**
+## 📝 Contribution Guidelines
+
+### Types of Contributions
+- **Bug fixes**: Fix broken functionality or errors
+- **Feature additions**: Add new platforms or capabilities
+- **Documentation**: Improve README, API docs, or code comments
+- **Testing**: Add or improve test coverage
+- **Performance**: Optimize existing code
+- **Security**: Fix security vulnerabilities or improve security practices
+
+### Before You Start
+1. **Check existing issues**: Look for open issues that match your contribution
+2. **Create an issue**: If your contribution doesn't have an issue, create one first
+3. **Discuss**: For major changes, discuss your approach in the issue before starting
+4. **Fork the repository**: Create your own fork to work on
+
+### Development Workflow
+
+1. **Create a feature branch**
+   ```bash
+   git checkout -b feature/add-tiktok-support
+   # or
+   git checkout -b fix/youtube-scraper-issue
+   ```
+
+2. **Make your changes**
+   - Follow the coding standards (see below)
+   - Write or update tests for your changes
+   - Update documentation as needed
+
+3. **Test your changes**
+   ```bash
+   # Run all tests
+   python -m pytest tests/ -v
+   
+   # Run with coverage
+   python -m pytest tests/ --cov=video_data_fetcher --cov-report=html
+   
+   # Check code style
+   flake8 video_data_fetcher/ tests/
+   
+   # Format code
+   black video_data_fetcher/ tests/
+   
+   # Type checking (if applicable)
+   mypy video_data_fetcher/
+   ```
+
+4. **Commit your changes**
+   ```bash
+   git add .
+   git commit -m "feat: add TikTok platform support
+
+   - Add TikTok scraper implementation
+   - Add TikTok-specific URL patterns
+   - Add comprehensive unit tests
+   - Update documentation
+
+   Closes #123"
+   ```
+
+5. **Push and create pull request**
+   ```bash
+   git push origin feature/add-tiktok-support
+   ```
+   Then create a pull request on GitHub.
+
+## 🎨 Coding Standards
+
+### Python Style Guide
+- Follow [PEP 8](https://pep8.org/) style guidelines
+- Use meaningful variable and function names
+- Add docstrings to all functions and classes
+- Keep functions small and focused (single responsibility)
+- Use type hints where appropriate
+
+### Code Structure
+```python
+def fetch_video_data(url: str) -> Dict[str, Any]:
+    """
+    Fetch video metadata from a given URL.
+    
+    Args:
+        url: The video URL to fetch data from
+        
+    Returns:
+        Dictionary containing video metadata
+        
+    Raises:
+        ValueError: If URL is invalid or unsupported
+        NetworkError: If request fails
+    """
+    # Implementation here
+    pass
+```
+
+### Error Handling
+- Use specific exception types
+- Provide meaningful error messages
+- Include context in error messages
+- Log errors appropriately
+
+```python
+try:
+    response = requests.get(url, timeout=30)
+    response.raise_for_status()
+except requests.Timeout:
+    raise NetworkError(f"Request timed out for URL: {url}")
+except requests.RequestException as e:
+    raise NetworkError(f"Request failed for URL {url}: {str(e)}")
+```
+
+## 🧪 Testing Guidelines
+
+### Test Structure
+- Place tests in the `tests/` directory
+- Name test files with `test_` prefix
+- Use descriptive test function names
+- Follow the Arrange-Act-Assert pattern
+
+### Example Test
+```python
+def test_youtube_fetcher_success():
+    """Test successful YouTube video data fetching."""
+    # Arrange
+    fetcher = YouTubeFetcher()
+    url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    
+    # Act
+    result = fetcher.fetch(url)
+    
+    # Assert
+    assert result["success"] is True
+    assert result["platform"] == "youtube"
+    assert "title" in result
+    assert "view_count" in result
+```
+
+### Mocking Best Practices
+- Mock external HTTP requests
+- Mock platform-specific APIs
+- Use fixtures for common test data
+- Test both success and failure scenarios
+
+### Running Tests
 ```bash
-python main.py
+# Run all tests
+python -m pytest tests/ -v
+
+# Run specific test file
+python -m pytest tests/test_video_data_fetcher.py -v
+
+# Run with coverage report
+python -m pytest tests/ --cov=video_data_fetcher --cov-report=html
+
+# Run tests in parallel (if pytest-xdist installed)
+python -m pytest tests/ -n auto
 ```
 
-## 📋 Types of Contributions
+## 📋 Pull Request Process
 
-We welcome several types of contributions:
+### Before Submitting
+1. **Update documentation**: Update README, API docs, or code comments
+2. **Add tests**: Ensure new functionality has tests
+3. **Update changelog**: Add entry to CHANGELOG.md if applicable
+4. **Check dependencies**: Update requirements.txt if needed
+5. **Test thoroughly**: Run all tests and ensure they pass
 
-- 🐛 **Bug Reports**: Report issues you encounter
-- 💡 **Feature Requests**: Suggest new features or improvements
-- 🔧 **Code Contributions**: Submit pull requests with improvements
-- 📖 **Documentation**: Improve our documentation and examples
-- 🧪 **Testing**: Help improve test coverage
-- 🎨 **UI/UX**: Improve user experience and interfaces
-- 🌍 **Translations**: Help translate documentation
+### Pull Request Template
+When creating a pull request, please include:
+
+- **Description**: What does this PR do?
+- **Type of change**: Bug fix, feature, documentation, etc.
+- **Testing**: How did you test your changes?
+- **Breaking changes**: Any breaking changes?
+- **Screenshots**: If UI changes
+- **Checklist**: Verify all items are completed
+
+### Review Process
+1. **Automated checks**: CI/CD will run tests and checks
+2. **Code review**: Maintainers will review your code
+3. **Feedback**: Address any feedback or requested changes
+4. **Merge**: Once approved, your PR will be merged
 
 ## 🐛 Bug Reports
 
 When reporting bugs, please include:
 
-- **Clear description** of the issue
-- **Steps to reproduce** the problem
-- **Expected behavior** vs actual behavior
-- **Environment details** (OS, Python version, dependencies)
-- **Error logs** or screenshots
-- **API request/response** examples (if applicable)
-
-### Bug Report Template
-```markdown
-**Bug Description:**
-A clear description of what the bug is.
-
-**Steps to Reproduce:**
-1. Go to '...'
-2. Click on '...'
-3. See error
-
-**Expected Behavior:**
-What should have happened.
-
-**Actual Behavior:**
-What actually happened.
-
-**Environment:**
-- OS: [e.g., macOS 14.0, Ubuntu 22.04]
-- Python Version: [e.g., 3.11.0]
-- Service Version: [e.g., 1.0.0]
-- Browser: [if applicable]
-
-**Additional Context:**
-Add any other context about the problem here.
-```
+- **Bug description**: Clear description of the issue
+- **Steps to reproduce**: How to reproduce the bug
+- **Expected behavior**: What should happen
+- **Actual behavior**: What actually happens
+- **Environment**: OS, Python version, dependencies
+- **Error messages**: Any error messages or logs
+- **URLs tested**: Specific URLs that cause the issue
 
 ## 💡 Feature Requests
 
-For feature requests, please:
+For new features, please provide:
 
-- **Check existing issues** to avoid duplicates
-- **Describe the feature** and its use case
-- **Explain why** this feature would be beneficial
-- **Provide examples** of how it would work
-- **Consider implementation** complexity and impact
+- **Use case**: Why is this feature needed?
+- **Proposed solution**: How should it work?
+- **Alternatives**: Any alternative approaches?
+- **Platform support**: Which platforms should be supported?
+- **API changes**: Any API changes needed?
+- **Breaking changes**: Will this break existing functionality?
 
-## 🔧 Code Contributions
+## 🔧 Development Tips
 
-### Code Style Guidelines
-
-We follow PEP 8 style guidelines with some additional rules:
-
-- **Line length**: Maximum 100 characters
-- **Imports**: Grouped as standard library, third-party, local imports
-- **Docstrings**: Use Google style docstrings for functions and classes
-- **Type hints**: Use type hints for all function parameters and return values
-- **Variable naming**: Use descriptive names, snake_case for functions/variables
-- **Constants**: Use UPPER_CASE for constants
-
-#### Example Code Style
+### Debugging
 ```python
-from typing import List, Optional, Dict, Any
 import logging
-from datetime import datetime
 
-from flask import Flask, jsonify, request
+# Enable debug logging
+logging.basicConfig(level=logging.DEBUG)
 
-from instagram_reels_microservice.models import ReelData
-from instagram_reels_microservice.config import ConfigManager
-
+# Add debug logs to your code
 logger = logging.getLogger(__name__)
-
-class InstagramScraper:
-    """Instagram scraping service with multiple methods."""
-    
-    def __init__(self, config: ConfigManager) -> None:
-        """Initialize the scraper with configuration.
-        
-        Args:
-            config: Configuration manager instance.
-        """
-        self.config = config
-        self.session = None
-    
-    def scrape_reels(self, target: str, max_reels: int = 10) -> List[ReelData]:
-        """Scrape reels from Instagram target.
-        
-        Args:
-            target: Instagram profile, hashtag, or URL.
-            max_reels: Maximum number of reels to scrape.
-            
-        Returns:
-            List of ReelData objects.
-            
-        Raises:
-            ScrapingError: If scraping fails.
-        """
-        # Implementation here
-        pass
+logger.debug(f"Processing URL: {url}")
 ```
 
-### Testing Guidelines
-
-- **Write tests** for all new functionality
-- **Maintain coverage** above 80%
-- **Use pytest** for testing framework
-- **Mock external services** (Instagram, Mistral AI)
-- **Test edge cases** and error conditions
-- **Use fixtures** for common test data
-
-#### Test Example
-```python
-import pytest
-from unittest.mock import Mock, patch
-
-from instagram_reels_microservice.services.analyzer import AIAnalyzer
-from instagram_reels_microservice.models import ReelData
-
-class TestAIAnalyzer:
-    """Test cases for AI Analyzer service."""
-    
-    @pytest.fixture
-    def analyzer(self):
-        """Create analyzer instance for testing."""
-        return AIAnalyzer(api_key="test_key")
-    
-    @patch('requests.post')
-    def test_analyze_content_success(self, mock_post, analyzer):
-        """Test successful content analysis."""
-        # Arrange
-        mock_response = Mock()
-        mock_response.json.return_value = {
-            'choices': [{'message': {'content': 'Test analysis'}}]
-        }
-        mock_post.return_value = mock_response
-        
-        reel_data = ReelData(
-            reel_id="test123",
-            caption="Test caption",
-            # ... other fields
-        )
-        
-        # Act
-        result = analyzer.analyze_content(reel_data)
-        
-        # Assert
-        assert result.summary == "Test analysis"
-        mock_post.assert_called_once()
-```
-
-### Git Workflow
-
-1. **Create a feature branch** from `main`:
+### Performance Testing
 ```bash
-git checkout -b feature/your-feature-name
+# Simple load testing with curl
+for i in {1..10}; do
+  curl -X POST http://localhost:5001/api/analyze \
+    -H "Content-Type: application/json" \
+    -d '{"target": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}' &
+done
+wait
 ```
 
-2. **Make your changes** following our guidelines
-
-3. **Write/update tests** for your changes
-
-4. **Run the test suite**:
+### Environment Variables
+Create a `.env` file for local development:
 ```bash
-pytest tests/ -v
+SERVICE_HOST=0.0.0.0
+SERVICE_PORT=5001
+DEBUG=true
+MAX_REELS_DEFAULT=10
 ```
 
-5. **Run linting**:
-```bash
-black src/ tests/
-flake8 src/ tests/
-mypy src/
-```
+## 📚 Documentation
 
-6. **Commit your changes** with a clear commit message:
-```bash
-git commit -m "feat: add new scraping method for hashtags
-
-- Implement hashtag scraping using Selenium
-- Add comprehensive tests for new functionality
-- Update documentation with usage examples
-
-Closes #123"
-```
-
-7. **Push to your fork**:
-```bash
-git push origin feature/your-feature-name
-```
-
-8. **Create a Pull Request** on GitHub
-
-### Commit Message Guidelines
-
-We follow [Conventional Commits](https://www.conventionalcommits.org/) specification:
-
-- **feat**: New feature
-- **fix**: Bug fix
-- **docs**: Documentation changes
-- **style**: Code style changes (formatting, etc.)
-- **refactor**: Code refactoring
-- **test**: Test additions or changes
-- **chore**: Build process or auxiliary tool changes
-
-Format: `type(scope): description`
-
-Examples:
-```
-feat(scraper): add hashtag scraping support
-fix(analyzer): resolve sentiment analysis error
-docs(readme): update installation instructions
-test(services): add unit tests for scraper service
-```
-
-## 📖 Documentation Contributions
-
-### Documentation Structure
-
-```
-docs/
-├── api/                    # API documentation
-├── examples/              # Usage examples
-├── deployment/             # Deployment guides
-└── development/           # Development guides
-```
-
-### Documentation Guidelines
-
-- **Use clear, concise language**
-- **Include code examples** where appropriate
-- **Update API docs** when endpoints change
-- **Add examples** for new features
-- **Keep documentation in sync** with code changes
+### Code Documentation
+- Add docstrings to all public functions and classes
+- Include parameter types and return types
+- Provide usage examples for complex functions
+- Keep documentation up to date with code changes
 
 ### API Documentation
+- Update API_README.md when adding new endpoints
+- Include request/response examples
+- Document error codes and messages
+- Keep examples current and working
 
-When adding new endpoints:
-
-1. **Update OpenAPI specification** (if applicable)
-2. **Document request/response formats**
-3. **Include example requests**
-4. **Document error responses**
-5. **Update API README**
-
-## 🧪 Testing
-
-### Running Tests
-
-```bash
-# Run all tests
-pytest tests/ -v
-
-# Run specific test file
-pytest tests/test_analyzer.py -v
-
-# Run with coverage
-pytest tests/ --cov=src/ --cov-report=html
-
-# Run integration tests only
-pytest tests/integration/ -v
-
-# Run unit tests only
-pytest tests/unit/ -v
-```
-
-### Test Categories
-
-- **Unit Tests**: Test individual functions and classes
-- **Integration Tests**: Test service interactions
-- **API Tests**: Test REST API endpoints
-- **Performance Tests**: Test performance and scalability
-
-### Mocking External Services
-
-When testing, always mock external dependencies:
-
-```python
-from unittest.mock import Mock, patch
-
-@patch('instagram_reels_microservice.services.scraper.Instaloader')
-def test_instagram_scraping(mock_instaloader):
-    """Test Instagram scraping with mocked Instaloader."""
-    # Configure mock
-    mock_instance = Mock()
-    mock_instaloader.return_value = mock_instance
-    
-    # Set up mock behavior
-    mock_instance.get_posts.return_value = [
-        Mock(shortcode="test123", caption="Test post")
-    ]
-    
-    # Test implementation
-    # ...
-```
-
-## 🐳 Docker Development
-
-### Building Development Image
-
-```bash
-# Build development image
-docker build -t instagram-reels-microservice:dev .
-
-# Run with development configuration
-docker run -p 5001:5001 \
-  --env-file .env \
-  -v $(pwd)/src:/app/src \
-  instagram-reels-microservice:dev
-```
-
-### Docker Compose for Development
-
-```bash
-# Start development services
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
-
-# Run tests in container
-docker-compose exec app pytest tests/ -v
-
-# Access container shell
-docker-compose exec app bash
-```
-
-## 🌍 Internationalization
-
-When adding new features:
-
-- **Use translatable strings** for user-facing messages
-- **Avoid hardcoded text** in error messages
-- **Support multiple languages** where appropriate
-- **Consider cultural differences** in examples
-
-## 🔒 Security
+## 🚨 Security
 
 ### Security Guidelines
+- Never commit API keys or credentials
+- Use environment variables for sensitive data
+- Validate all user inputs
+- Sanitize error messages (don't expose internal details)
+- Keep dependencies updated
+- Report security issues privately
 
-- **Never commit sensitive data** (API keys, passwords)
-- **Use environment variables** for configuration
-- **Validate all inputs** thoroughly
-- **Implement proper error handling** without exposing internals
-- **Use secure communication** (HTTPS in production)
-- **Keep dependencies updated** regularly
-
-### Reporting Security Issues
-
-**Do not** report security vulnerabilities through public GitHub issues.
-
-Instead, please email security concerns to: security@example.com
-
-Include:
-- Description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Suggested fix (if any)
-
-## 📊 Performance
-
-### Performance Guidelines
-
-- **Profile your code** before optimizing
-- **Use caching** where appropriate
-- **Implement connection pooling** for external services
-- **Optimize database queries** (if applicable)
-- **Monitor resource usage** (CPU, memory, network)
-- **Consider async operations** for I/O bound tasks
-
-## 🏷️ Release Process
-
-### Version Numbering
-
-We follow [Semantic Versioning](https://semver.org/):
-
-- **MAJOR**: Breaking changes
-- **MINOR**: New features (backward compatible)
-- **PATCH**: Bug fixes (backward compatible)
-
-### Release Checklist
-
-- [ ] All tests pass
-- [ ] Documentation updated
-- [ ] CHANGELOG.md updated
-- [ ] Version bumped in setup.py
-- [ ] Docker image built and tested
-- [ ] Git tag created
-- [ ] GitHub release created
-- [ ] PyPI package published (if applicable)
-
-## 🤝 Code Review Process
-
-### Review Criteria
-
-- **Code quality**: Follows our style guidelines
-- **Functionality**: Works as intended
-- **Tests**: Adequate test coverage
-- **Documentation**: Updated and accurate
-- **Performance**: No significant performance regressions
-- **Security**: No security vulnerabilities introduced
-
-### Review Guidelines
-
-- **Be constructive** and helpful
-- **Focus on the code**, not the person
-- **Explain your reasoning** for suggestions
-- **Approve** when ready, **request changes** when needed
-- **Test the changes** locally when possible
+### Security Reporting
+If you discover a security vulnerability, please:
+1. **Do not** create a public issue
+2. Email the maintainers privately
+3. Provide detailed information about the vulnerability
+4. Allow time for the issue to be addressed before disclosure
 
 ## 📞 Getting Help
 
-### Communication Channels
-
-- **GitHub Issues**: Bug reports and feature requests
-- **GitHub Discussions**: General questions and discussions
-- **Email**: contact@example.com
-- **Discord**: [Join our server](https://discord.gg/example)
-
-### Getting Help
-
-When asking for help:
-
-1. **Search existing issues** first
-2. **Provide context** about your problem
-3. **Include relevant code** snippets
-4. **Share error messages** and logs
-5. **Describe what you've tried** already
+- **GitHub Issues**: For bug reports and feature requests
+- **Discussions**: For questions and general discussion
+- **Documentation**: Check README and API docs first
+- **Examples**: Look at examples/ directory for usage patterns
 
 ## 🏆 Recognition
 
-Contributors are recognized in:
+Contributors will be recognized in:
+- CONTRIBUTORS.md file
+- Release notes for significant contributions
+- Project documentation
 
-- **CONTRIBUTORS.md** file
-- **Release notes** for significant contributions
-- **GitHub contributors** page
-- **Special mentions** in community updates
-
-## 📜 Code of Conduct
-
-This project adheres to a Code of Conduct. By participating, you are expected to uphold this code:
-
-### Our Standards
-
-- **Be respectful** and inclusive
-- **Welcome newcomers** and help them get started
-- **Accept constructive criticism** gracefully
-- **Focus on what's best** for the community
-- **Show empathy** towards other community members
-
-### Unacceptable Behavior
-
-- **Harassment** of any kind
-- **Discriminatory language** or behavior
-- **Personal attacks** or trolling
-- **Spam** or off-topic discussions
-- **Sharing private information** without consent
-
-## 📚 Additional Resources
-
-- [Python Style Guide (PEP 8)](https://www.python.org/dev/peps/pep-0008/)
-- [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
-- [Conventional Commits](https://www.conventionalcommits.org/)
-- [Semantic Versioning](https://semver.org/)
-- [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
-
-## 📝 License
-
-By contributing to this project, you agree that your contributions will be licensed under the MIT License.
-
----
-
-**Thank you for contributing to Instagram Reels Microservice! 🎉**
+Thank you for contributing to make this project better!
