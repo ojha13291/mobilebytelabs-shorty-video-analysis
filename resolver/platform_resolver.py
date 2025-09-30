@@ -578,6 +578,15 @@ class PlatformResolver:
             List[str]: List of platform names
         """
         return list(self.platform_patterns.keys())
+    
+    def get_supported_platforms(self) -> List[str]:
+        """
+        Get a list of all supported platforms (alias for list_platforms).
+        
+        Returns:
+            List[str]: List of supported platform names
+        """
+        return self.list_platforms()
 
 
 # Global instance for convenience

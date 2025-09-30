@@ -25,9 +25,7 @@ def create_app() -> Flask:
     
     # Register blueprints
     from api.endpoints import api_bp
-    from api.llm_endpoints import llm_bp
     app.register_blueprint(api_bp, url_prefix='/api')
-    app.register_blueprint(llm_bp, url_prefix='/api/llm')
     
     return app
 
