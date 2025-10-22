@@ -305,7 +305,7 @@ def render_llm_analysis(data: Dict[str, Any]):
         if isinstance(topics, str):
             try:
                 topics = json.loads(topics)
-            except:
+            except json.JSONDecodeError:
                 topics = [topics]
         
         # Display topics as tags
