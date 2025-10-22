@@ -346,9 +346,12 @@ def render_engagement_metrics(data: Dict[str, Any]):
     
     with col4:
         # Calculate engagement rate
-        views = metadata.get('views', 1)
-        engagement = ((likes + comments + shares) / views * 100) if views > 0 else 0
-        st.metric("📊 Engagement", f"{engagement:.2f}%")
+        views = metadata.get('views', 0)
+        if views > 0:
+            engagement = (likes + comments + shares) / views * 100
+            st.metric("📊 Engagement", f"{engagement:.2f}%")
+        else:
+            st.metric("📊 Engagement", "N/A")
 
 def render_results(results: Dict[str, Any]):
     """Render complete analysis results"""
