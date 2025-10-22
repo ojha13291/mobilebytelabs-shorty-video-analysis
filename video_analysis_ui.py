@@ -458,15 +458,8 @@ def main():
                 if platform_info:
                     st.success(f"✓ Detected: {render_platform_badge(platform_info.get('platform', 'Unknown'))}")
             
-            # Run analysis
+                        # Run analysis
             with st.spinner("⚙️ Processing video... This may take up to 2 minutes..."):
-                progress_bar = st.progress(0)
-                
-                # Simulate progress
-                for i in range(100):
-                    time.sleep(0.02)
-                    progress_bar.progress(i + 1)
-                
                 results = analyze_video(video_url)
                 
                 if results:
@@ -477,6 +470,7 @@ def main():
                 else:
                     st.session_state.processing = False
                     st.error("✗ Analysis failed. Please check the URL and try again.")
+
     
     # Display results
     if st.session_state.analysis_results:
